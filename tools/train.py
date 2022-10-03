@@ -27,6 +27,8 @@ def parse_args():
     parser.add_argument(
         '--resume-from', help='the checkpoint file to resume from')
     parser.add_argument(
+        '--auto-resume', default=True, type=bool, help='the checkpoint file to resume from')
+    parser.add_argument(
         '--no-validate',
         action='store_true',
         help='whether not to evaluate the checkpoint during training')
@@ -111,6 +113,9 @@ def main():
                                 osp.splitext(osp.basename(args.config))[0])
     if args.resume_from is not None:
         cfg.resume_from = args.resume_from
+    if args.auto_resume:
+        cfg.resume_from = os.path.join(cfg.work_dir, 'latest.pth')
+
     if args.gpus is not None:
         cfg.gpu_ids = range(1)
         warnings.warn('`--gpus` is deprecated because we only support '
