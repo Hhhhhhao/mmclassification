@@ -1049,6 +1049,10 @@ class ImageNet(CustomDataset):
                  ann_file: Optional[str] = None,
                  test_mode: bool = False,
                  file_client_args: Optional[dict] = None):
+        # load base data
+        from hfai.datasets import ImageNet
+        split = data_prefix.split('/')[-1]
+        self.hfai_dataset = ImageNet(split=split)
         super().__init__(
             data_prefix=data_prefix,
             pipeline=pipeline,
@@ -1057,3 +1061,31 @@ class ImageNet(CustomDataset):
             extensions=self.IMG_EXTENSIONS,
             test_mode=test_mode,
             file_client_args=file_client_args)
+
+    def __len__(self):
+        return len(self.hfai_dataset)
+
+    def load_annotations(self):
+        pass
+
+    def get_gt_labels(self):
+        if hasattr(self, 'gt_labels'):
+            return self.gt_labels
+        else:
+            import numpy as np
+            gt_labels = []
+            for idx in range(len(self.hfai_dataset)):
+                img, label = self.hfai_dataset.__getitem__([idx])[0]
+                gt_labels.append(label)
+            gt_labels = np.array(gt_labels)
+            self.gt_labels = gt_labels 
+            return gt_labels
+
+    def prepare_data(self, idx):
+        img, label = self.hfai_dataset.__getitem__([idx])[0]
+        results = {
+            'img_prefix': None,
+            'img': img,
+            'gt_label': label,
+        }
+        return self.pipeline(results)

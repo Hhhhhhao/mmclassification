@@ -200,7 +200,7 @@ class CrossEntropyLoss(nn.Module):
 
         loss_cls = self.loss_weight * self.cls_criterion(
             cls_score,
-            label,
+            label.squeeze(),
             weight,
             class_weight=class_weight,
             reduction=reduction,
