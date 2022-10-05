@@ -6,7 +6,8 @@ optimizer_config = dict(grad_clip=None)
 lr_config = dict(
     policy='CosineAnnealing',
     min_lr=0,
-    warmup='linear',
-    warmup_iters=5*626,
-    warmup_ratio=0.25)
+    # warmup='linear',
+    # warmup_iters=5*626,
+    # warmup_ratio=0.25
+    )
 runner = dict(type='EpochBasedRunner', max_epochs=100)
