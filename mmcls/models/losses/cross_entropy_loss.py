@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from ..builder import LOSSES
-from .utils import weight_reduce_loss
+from .utils import convert_to_one_hot, weight_reduce_loss
 
 
 def cross_entropy(pred,
@@ -63,6 +63,10 @@ def soft_cross_entropy(pred,
     Returns:
         torch.Tensor: The calculated loss
     """
+    # check label dimension
+    if label.dim() == 1:
+        label = convert_to_one_hot(label, classes=pred.shape[1])
+
     # element-wise losses
     loss = -label * F.log_softmax(pred, dim=-1)
     if class_weight is not None:
